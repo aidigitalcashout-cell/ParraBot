@@ -1,0 +1,7 @@
+Flask
+Flask-Admin
+cryptography
+pandas
+selenium
+Werkzeug
+pytest

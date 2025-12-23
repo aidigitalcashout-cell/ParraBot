@@ -9,46 +9,50 @@ from error_handling import handle_captcha
 from payment_processing import process_payment
 from anonymity import simulate_human_behavior
 
+
 def automate_purchase(card_details):
     browser = webdriver.Chrome()
-        proxy = get_proxy()
-            browser.set_proxy(proxy)
+    try:
+        # Get a proxy if available (not applied automatically here)
+        _proxy = get_proxy()
 
-                for encrypted_card_detail in card_details:
-                        card_detail = decrypt_card_detail(encrypted_card_detail)
-                                if not card_detail:
-                                            continue
+        for encrypted_card_detail in card_details:
+            card_detail = decrypt_card_detail(encrypted_card_detail)
+            if not card_detail:
+                continue
 
-                                                    # Simulate human behavior
-                                                            simulate_human_behavior(browser)
+            # Simulate human behavior
+            simulate_human_behavior(browser)
 
-                                                                    # Navigate to target website
-                                                                            browser.get('https://example-retailer.com')
+            # Navigate to target website
+            browser.get('https://example-retailer.com')
 
-                                                                                    # Handle CAPTCHA if present
-                                                                                            handle_captcha(browser)
+            # Handle CAPTCHA if present
+            handle_captcha(browser)
 
-                                                                                                    # Select product and add to cart
-                                                                                                            product_element = browser.find_element(By.ID, 'product_id')
-                                                                                                                    product_element.click()
-                                                                                                                            add_to_cart_element = browser.find_element(By.ID, 'add_to_cart_button')
-                                                                                                                                    add_to_cart_element.click()
+            # Select product and add to cart
+            product_element = browser.find_element(By.ID, 'product_id')
+            product_element.click()
+            add_to_cart_element = browser.find_element(By.ID, 'add_to_cart_button')
+            add_to_cart_element.click()
 
-                                                                                                                                            # Proceed to checkout
-                                                                                                                                                    checkout_element = browser.find_element(By.ID, 'checkout_button')
-                                                                                                                                                            checkout_element.click()
+            # Proceed to checkout
+            checkout_element = browser.find_element(By.ID, 'checkout_button')
+            checkout_element.click()
 
-                                                                                                                                                                    # Enter shipping and billing information
-                                                                                                                                                                            shipping_info_elements = browser.find_elements(By.CLASS_NAME, 'shipping_info')
-                                                                                                                                                                                    for element in shipping_info_elements:
-                                                                                                                                                                                                element.send_keys(card_detail['shipping_address'])
+            # Enter shipping and billing information
+            shipping_info_elements = browser.find_elements(By.CLASS_NAME, 'shipping_info')
+            for element in shipping_info_elements:
+                element.send_keys(card_detail.get('shipping_address', ''))
 
-                                                                                                                                                                                                        billing_info_elements = browser.find_elements(By.CLASS_NAME, 'billing_info')
-                                                                                                                                                                                                                for element in billing_info_elements:
-                                                                                                                                                                                                                            element.send_keys(card_detail['billing_address'])
+            billing_info_elements = browser.find_elements(By.CLASS_NAME, 'billing_info')
+            for element in billing_info_elements:
+                element.send_keys(card_detail.get('billing_address', ''))
 
-                                                                                                                                                                                                                                    # Process payment
-                                                                                                                                                                                                                                            process_payment(browser, card_detail)
-
-                                                                                                                                                                                                                                                browser.quit()
-                                                                                                                                                                                                                            
+            # Process payment
+            process_payment(browser, card_detail)
+    finally:
+        try:
+            browser.quit()
+        except Exception:
+            pass
